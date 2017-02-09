@@ -10,18 +10,33 @@
 </head>
 <body class="fullbleed layout vertical">
   <nav class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
-      <div class="navbar-header">
-        <a href="/" class="navbar-brand">Catalog</a>
+      <div class="container">
+         <div class="navbar-header">
+            <a href="/" class="navbar-brand">Catalog</a>
+         </div>
+         <div class="navbar-collapse collapse">
+           <ul class="nav navbar-nav navbar-right">
+             {% if user==None %}
+             <li><div id="signinButton">
+               <span class="g-signin"
+                 data-scope="openid"
+                 data-clientid="671978925181-d15vpasjm8kdi2r56vclndcj08qdkag2.apps.googleusercontent.com"
+                 data-redirecturi="catalog"
+                 data-accesstype="offline"
+                 data-cookiepolicy="single_host_origin"
+                 data-callback="signInCallback"
+                 data-approvalprompt="force">
+               </span>
+             </div></li>
+             {% else %}
+               <li><a href="">Logged in as: {{ user }}</a></li>
+               <li><a href="{{ url_for('gdisconnect') }}">Sign out</a></li>
+             {% endif %}
+           </ul>
+         </div>
       </div>
-      <div class="navbar-collapse collapse">
-        <ul class="nav navbar-nav navbar-right">
-          <li><a href="/login">Login</a></li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-  <!-- Displaying flash messages -->
+   </nav>
+   <!-- Displaying flash messages -->
   <div class="container">
     <div class = 'flash'>
     		  {% with messages = get_flashed_messages() %}

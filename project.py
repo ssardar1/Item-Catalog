@@ -53,7 +53,7 @@ def routeToMain():
     """ Main Page """
     return redirect(url_for('getMainPage'))
 
-@app.route('/catalog/JSON')    
+@app.route('/catalog.json')    
 def getCatalog():
     """ Returns JSON version of the catalog """
     output_json = []
@@ -160,7 +160,7 @@ def getMainPage():
         flash("you are now logged in as %s" % login_session['username'])
         return redirect(url_for('getMainPage'))
 
-@app.route('/catalog/categories/<category_name>/')
+@app.route('/catalog/<category_name>/items')
 def getCategoryItems(category_name):
     """ Returns items for a given category name """
     categories = session.query(Category).all()
@@ -180,11 +180,15 @@ def getCategoryItems(category_name):
         items=items, categories=categories, category_names=category_names
     )
 
-@app.route('/catalog/items/<item_title>/')
-def getItemDetails(item_title):
+@app.route('/catalog/<category_name>/<item_title>/')
+def getItemDetails(category_name,item_title):
     """ Returns a specific item object given its title """
     item = session.query(CategoryItem).filter_by(title=item_title).one()
     category = session.query(Category).filter_by(id=item.category_id).one()
+    try:
+        user = login_session['username']
+    except KeyError:
+        user = None
     return render_template(
         'item_detail.html', item=item, category=category
     )
@@ -222,6 +226,10 @@ def editItem(item_title):
     editedItem = session.query(CategoryItem).filter_by(title=item_title).one()
     category = session.query(Category).filter_by(id=editedItem.category_id).one()
     categories = session.query(Category).all()
+    try:
+        user = login_session['username']
+    except KeyError:
+        user = None
     if request.method == 'POST':
         if request.form['title']:
             title = request.form['title']
@@ -248,6 +256,10 @@ def editItem(item_title):
 @login_required
 def deleteItem(item_title):
     """ Deletes an item given its unique title """
+    try:
+        user = login_session['username']
+    except KeyError:
+        user = None
     if request.method == 'POST':
         itemToDelete = session.query(CategoryItem).filter_by(title=item_title).one()
         session.delete(itemToDelete)
